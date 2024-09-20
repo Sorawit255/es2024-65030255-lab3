@@ -1,26 +1,40 @@
 version: '3.8'
-
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
-    volumes:
-      - ./mongo-data:/data/db
+    container_name: mongodb
     ports:
       - "27017:27017"
-
-  nginx:
-    image: nginx:latest
     volumes:
-      - ./nginx:/usr/share/nginx/html
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-    ports:
-      - "80:80"
+      - ./data/mongo:/data/db  
+    networks:
+      - app
 
   express:
     build: ./express
-    volumes:
-      - ./express:/usr/src/app
+    container_name: express
     ports:
       - "3000:3000"
+    volumes:
+      - ./express:/usr/src/app   
     depends_on:
-      - mongo
+      - mongodb
+    networks:
+      - app
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx:/usr/share/nginx/html  
+      - ./nginx/nginx.conf:/etc/nginx/default.conf 
+    depends_on:
+      - express
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge

@@ -1,5 +1,5 @@
-# Dockerfile
-FROM node:14
+# ใช้ Node.js
+FROM node:18
 
 WORKDIR /usr/src/app
 
